@@ -19,3 +19,19 @@ def get_file_content(working_directory, file_path):
         return content
     except Exception as e:
         return f'Error: {e}'
+
+# Define the function schema for use with Google GenAI
+from google.genai import types
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Returns the content of a file within the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The file to return content from within the working directory.",
+            ),
+        },
+    ),
+)

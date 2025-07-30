@@ -7,6 +7,7 @@ from functions.get_files_info import get_files_info, schema_get_files_info
 from functions.run_python_file import run_python_file, schema_run_python_file
 from functions.write_file import write_file, schema_write_file
 from functions.get_file_content import get_file_content, schema_get_file_content
+from functions.call_function import call_function
 
 def main():
     if len(sys.argv) < 2:
@@ -63,8 +64,20 @@ def main():
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
 
     if response.function_calls:
-        for function_call_part in response.function_calls:
-            print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+        for function_call in response.function_calls:
+            result = call_function(function_call, verbose=sys.argv[-1] == "--verbose")
+            # Ensure result is types.Content and has function_response.response
+            if (
+                isinstance(result, types.Content)
+                and hasattr(result.parts[0], "function_response")
+                and hasattr(result.parts[0].function_response, "response")
+                and result.parts[0].function_response.response
+            ):
+                if sys.argv[-1] == "--verbose":
+                    print(f"-> {result.parts[0].function_response.response}")
+            else:
+                raise Exception("FatalException: Function call failed or returned no response.")
+        
     
         print(f"Response: {response.text}")
 

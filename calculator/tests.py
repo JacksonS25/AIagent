@@ -44,6 +44,8 @@ class TestCalculator(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.calculator.evaluate("+ 3")
 
+    print("Ran 9 tests")
+
 
 if __name__ == "__main__":
     unittest.main()
